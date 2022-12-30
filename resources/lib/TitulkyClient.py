@@ -26,12 +26,15 @@ class TitulkyClient(object):
 
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.LWPCookieJar()))
         opener.addheaders = []
-        if self.extra_commands.has_key("add_headers"):
+        if "add_headers" in self.extra_commands:
             for header in self.extra_commands["add_headers"]: opener.addheaders += [(header['name'], header['value'])]
             log(__name__,"Yeah mame headers {0}".format(opener.addheaders))
         urllib2.install_opener(opener)
 
     def download(self,sub_id, link_file):
+    
+        if "add_headers" not in self.extra_commands:
+            return None
 
         dest_dir = os.path.join(xbmc.translatePath(self.addon.getAddonInfo('profile')), 'temp').decode("utf-8")
         dest = os.path.join(dest_dir, "download.zip")
@@ -93,7 +96,7 @@ class TitulkyClient(object):
         if not referer == None:
             req.add_header('Referer', referer)
 
-        if self.extra_commands.has_key('get_file_before'): exec(self.extra_commands["get_file_before"])
+        if 'get_file_before' in self.extra_commands: exec(self.extra_commands["get_file_before"])
 
         response = urllib2.urlopen(req)
 
@@ -103,7 +106,7 @@ class TitulkyClient(object):
 
         data = get_content_from_response(response)
 
-        if self.extra_commands.has_key('get_file_after'): exec(self.extra_commands["get_file_after"])
+        if 'get_file_after' in self.extra_commands: exec(self.extra_commands["get_file_after"])
 
         return data
 
@@ -146,7 +149,7 @@ class TitulkyClient(object):
         if not referer == None:
             req.add_header('Referer', referer )
 
-        if self.extra_commands.has_key('download_before'): exec(self.extra_commands["download_before"])
+        if 'download_before' in self.extra_commands: exec(self.extra_commands["download_before"])
 
         response = urllib2.urlopen(req)
         content = get_content_from_response(response)
@@ -249,7 +252,7 @@ class TitulkyClient(object):
 
         req = urllib2.Request(url)
 
-        if self.extra_commands.has_key('search_before'): exec(self.extra_commands["search_before"])
+        if 'search_before' in self.extra_commands: exec(self.extra_commands["search_before"])
 
         response = urllib2.urlopen(req)
         content = get_content_from_response(response)
@@ -287,11 +290,11 @@ class TitulkyClient(object):
             except:
                 subtitle['author'] = None
 
-            if self.extra_commands.has_key('search_parse'): exec(self.extra_commands["search_parse"])
+            if 'search_parse' in self.extra_commands: exec(self.extra_commands["search_parse"])
 
             subtitles.append(subtitle)
 
-        if self.extra_commands.has_key('search_after'): exec(self.extra_commands["search_after"])
+        if 'search_after' in self.extra_commands: exec(self.extra_commands["search_after"])
 
         return subtitles
 
@@ -302,7 +305,7 @@ class TitulkyClient(object):
         request = urllib2.Request(self.server_url + '/index.php',login_postdata)
         request.add_header('Origin',  self.server_url)
 
-        if self.extra_commands.has_key('login_before'):
+        if 'login_before' in self.extra_commands:
             do_return = None
             exec(self.extra_commands["login_before"])
             if do_return != None: return do_return
@@ -319,7 +322,7 @@ class TitulkyClient(object):
         self.cookies['cavdesktop'] = re.search('cavdesktop=(\S+);', response.headers.get('Set-Cookie'), re.IGNORECASE | re.DOTALL).group(1)
         self.cookies['LogonId'] = re.search('LogonId=(\S+);', response.headers.get('Set-Cookie'), re.IGNORECASE | re.DOTALL).group(1)
 
-        if self.extra_commands.has_key('login_after'):
+        if 'login_after' in self.extra_commands:
             do_return = None
             exec(self.extra_commands["login_after"])
             if do_return != None: return do_return
@@ -338,7 +341,7 @@ class TitulkyClient(object):
         cookies_string = ""
         for cookie in self.cookies: cookies_string += "%s=%s; " % (cookie, self.cookies[cookie])
 
-        if self.extra_commands.has_key("add_cookies"):
+        if "add_cookies" in self.extra_commands:
             for cookie in self.extra_commands["add_cookies"]: cookies_string +=  "%s=%s; " % (cookie, self.extra_commands["add_cookies"][cookie])
 
         request.add_header('Cookie',cookies_string)
@@ -352,3 +355,6 @@ class TitulkyClient(object):
             ext_file = open(extra_commands_file, "r")
             self.extra_commands = simplejson.loads(ext_file.read())
             ext_file.close()
+        else:
+            dialog = xbmcgui.Dialog()
+            dialog.ok(self.addon.getAddonInfo('name'),'Nemůžu stahovat bez aktuálního souboru.')
