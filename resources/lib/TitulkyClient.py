@@ -30,6 +30,9 @@ class TitulkyClient(object):
         urllib.request.install_opener(opener)
 
     def download(self,sub_id, link_file):
+    
+        if "add_headers" not in self.extra_commands:
+            return None
 
         dest_dir = os.path.join(xbmcvfs.translatePath(self.addon.getAddonInfo('profile')), 'temp')
         dest = os.path.join(dest_dir, "download.zip")
@@ -317,7 +320,6 @@ class TitulkyClient(object):
         self.cookies['LogonId'] = re.search('LogonId=(\S+);', response.getheader('Set-Cookie'), re.IGNORECASE | re.DOTALL).group(1)
         self.cookies['cavdesktop'] = re.search('cavdesktop=(\S+);', response.headers.get('Set-Cookie'), re.IGNORECASE | re.DOTALL).group(1)
 
-
         if 'login_after' in self.extra_commands:
             do_return = None
             exec(self.extra_commands["login_after"])
@@ -351,3 +353,6 @@ class TitulkyClient(object):
             ext_file = open(extra_commands_file, "r")
             self.extra_commands = simplejson.loads(ext_file.read())
             ext_file.close()
+        else:
+            dialog = xbmcgui.Dialog()
+            dialog.ok(self.addon.getAddonInfo('name'),'Nemůžu stahovat bez aktuálního souboru.')
