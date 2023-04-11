@@ -310,7 +310,7 @@ class TitulkyClient(object):
             exec(self.extra_commands["login_before"])
             if do_return != None: return do_return
 
-        response = urllib2.urlopen(request)
+        response = urllib2.urlopen(request, timeout = 120)
         content = get_content_from_response(response)
 
         if content.find('BadLogin')>-1: return False
