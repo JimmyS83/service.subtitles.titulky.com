@@ -184,6 +184,10 @@ class TitulkyClient(object):
 
         found_subtitles = self.search_subtitle(title)
         log(__name__, "Parsed subtitles: %s" % found_subtitles )
+        
+        if len(found_subtitles) < 1:  # No subtitles foudnd, lets try with filename
+            found_subtitles = self.search_subtitle(item['file_name'])
+  
 
         lang_filetred_found_subtitles = self.filter_subtitles_by_language(item['3let_language'], found_subtitles)
         log(__name__, ["Language filter", lang_filetred_found_subtitles])

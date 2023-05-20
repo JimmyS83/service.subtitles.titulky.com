@@ -70,6 +70,10 @@ def get_file_size_from_rar(first_rar_filename):
         return None
 
 
+def get_filename(file_path):
+    return os.path.splitext(os.path.basename(file_path[6:]))[0]
+
+
 def extract_subtitles(archive_dir):
     xbmc.executebuiltin('Extract("%s")' % archive_dir)
 

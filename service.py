@@ -21,7 +21,7 @@ __temp__       = xbmcvfs.translatePath( os.path.join( __profile__, 'temp', ''))
 
 sys.path.append (__resource__)
 
-from utilities import log, extract_subtitles
+from utilities import log, extract_subtitles, get_filename
 from TitulkyClient import TitulkyClient as SubtitlesClient
 
 def Search(item):
@@ -101,6 +101,7 @@ if params['action'] == 'search' or params['action'] == 'manualsearch':
   item['tvshow']             = normalizeString(xbmc.getInfoLabel("VideoPlayer.TVshowtitle"))   # Show
   item['title']              = normalizeString(xbmc.getInfoLabel("VideoPlayer.OriginalTitle")) # try to get original title
   item['file_original_path'] = urllib.parse.unquote(xbmc.Player().getPlayingFile())  # Full path of a playing file
+  item['file_name'] = get_filename(item['file_original_path'])
   item['3let_language']      = []
 
   if 'searchstring' in params:
