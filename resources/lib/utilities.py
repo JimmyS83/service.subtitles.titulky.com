@@ -72,7 +72,7 @@ def get_file_size_from_rar(first_rar_filename):
 
 def get_filename(file_path):
     if file_path.find("http") > -1:
-        path = os.path.splitext(os.path.basename(xbmc.getInfoLabel(u"Player.Filename")))[0]
+        path = os.path.splitext(os.path.basename(xbmc.getInfoLabel("Player.Filename")))[0]
     else:
         path = os.path.splitext(os.path.basename(file_path[6:]))[0]
     return path
